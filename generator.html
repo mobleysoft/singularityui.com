@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SingularityUI design-token generator: one brand color plus a few brand adjectives in, a ready-to-use CSS/JSON design-token set out. Built on the same token shape Skeleton King already generates for this portfolio.">
+<title>SingularityUI | Design-token generator</title>
+<style>
+  :root {
+    --bg-dark: #070b0a;
+    --primary: #6200EA;
+    --secondary: #7C4DFF;
+    --accent: #00FF00;
+    --glass-bg: rgba(20, 20, 20, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --text-primary: #f4efe5;
+    --text-muted: #999;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background-color: var(--bg-dark);
+    background-image: radial-gradient(circle at 80% 10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 32rem),
+                       linear-gradient(160deg, var(--primary) 0%, var(--bg-dark) 45%);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  main { width: min(980px, calc(100% - 40px)); margin: 0 auto; padding: 56px 0 80px; }
+  header { border-bottom: 1px solid var(--glass-border); padding-bottom: 24px; margin-bottom: 32px; }
+  .eyebrow { color: var(--accent); font: 700 11px/1.4 ui-monospace, SFMono-Regular, monospace; letter-spacing: .18em; text-transform: uppercase; }
+  h1 { font-size: clamp(30px, 5vw, 44px); margin: 14px 0 10px; letter-spacing: -0.02em; }
+  .thesis { color: var(--text-muted); font-size: 1.05rem; max-width: 640px; }
+  a.back { color: var(--secondary); text-decoration: none; font-size: 0.85rem; }
+  a.back:hover { text-decoration: underline; }
+
+  .panel { margin: 28px 0; padding: 26px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 14px; backdrop-filter: blur(12px); }
+  .panel h2 { margin: 0 0 4px; font-size: 1.2rem; }
+  .panel .tag { color: var(--accent); font: 700 10px/1 ui-monospace, SFMono-Regular, monospace; letter-spacing: .16em; text-transform: uppercase; }
+
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 18px; }
+  @media (max-width: 640px) { .controls { grid-template-columns: 1fr; } }
+  label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; }
+  input[type="color"] { width: 64px; height: 40px; border: 1px solid var(--glass-border); border-radius: 8px; background: none; padding: 0; cursor: pointer; }
+  input[type="text"] { width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-family: inherit; }
+  .color-row { display: flex; align-items: center; gap: 14px; }
+  .color-row code { color: var(--text-muted); font-size: 0.85rem; }
+
+  .adjectives { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .adj-btn {
+    padding: 8px 14px; border-radius: 999px; border: 1px solid var(--glass-border);
+    background: rgba(0,0,0,0.35); color: var(--text-muted); font-size: 0.85rem; cursor: pointer;
+  }
+  .adj-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,255,0,0.08); }
+
+  .swatch-row { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+  .swatch { width: 56px; text-align: center; font-size: 0.65rem; color: var(--text-muted); }
+  .swatch .chip { width: 56px; height: 44px; border-radius: 8px; border: 1px solid var(--glass-border); margin-bottom: 4px; }
+
+  .scale-preview { margin-top: 18px; }
+  .scale-preview .step { border-bottom: 1px dashed var(--glass-border); padding: 8px 0; color: var(--text-primary); }
+  .scale-preview .step:last-child { border-bottom: none; }
+  .scale-preview .step small { color: var(--text-muted); font-family: ui-monospace, monospace; margin-left: 10px; }
+
+  .spacing-preview { display: flex; align-items: flex-end; gap: 6px; margin-top: 18px; height: 80px; }
+  .spacing-preview .bar { background: var(--accent-live, #00FF00); border-radius: 4px 4px 0 0; width: 22px; opacity: 0.85; }
+
+  pre { background: #000; border: 1px solid var(--glass-border); border-radius: 10px; padding: 18px; overflow-x: auto; font-size: 0.8rem; max-height: 340px; }
+  .btn-row { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+  button.action {
+    background: var(--accent); color: #050505; border: none; border-radius: 8px;
+    padding: 10px 18px; font-weight: 700; font-size: 0.85rem; cursor: pointer; letter-spacing: .02em;
+  }
+  button.action.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  button.action:hover { opacity: 0.85; }
+
+  footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--glass-border); font: 12px/1.4 ui-monospace, SFMono-Regular, monospace; letter-spacing: .06em; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <a class="back" href="index.html">&larr; SingularityUI</a>
+    <span class="eyebrow">Skeleton King / MVP</span>
+    <h1>Design-token generator</h1>
+    <p class="thesis">One brand color, a few brand adjectives — get back a full CSS + JSON design-token set:
+    a 10-step color scale, a spacing scale, and a type scale, in the same shape Skeleton King already
+    generates for this portfolio's 122 venture token files. Runs entirely in your browser — no data leaves
+    this page, nothing is sent to a server.</p>
+  </header>
+
+  <section class="panel">
+    <span class="tag">Input</span>
+    <h2>Brand color + adjectives</h2>
+    <div class="controls">
+      <div>
+        <label for="brandColor">Brand color</label>
+        <div class="color-row">
+          <input type="color" id="brandColor" value="#00FF00">
+          <code id="brandColorHex">#00FF00</code>
+        </div>
+      </div>
+      <div>
+        <label for="projectName">Project name (for the file header)</label>
+        <input type="text" id="projectName" value="my-project.com">
+      </div>
+    </div>
+    <div style="margin-top:18px;">
+      <label>Brand adjectives (pick 1–3 — drives spacing + type scale)</label>
+      <div class="adjectives" id="adjectiveList">
+        <button class="adj-btn" data-adj="minimal">minimal</button>
+        <button class="adj-btn" data-adj="bold">bold</button>
+        <button class="adj-btn" data-adj="elegant">elegant</button>
+        <button class="adj-btn" data-adj="playful">playful</button>
+        <button class="adj-btn" data-adj="dense">dense</button>
+        <button class="adj-btn" data-adj="airy">airy</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <span class="tag">Preview</span>
+    <h2>Color scale</h2>
+    <div class="swatch-row" id="colorSwatches"></div>
+  </section>
+
+  <section class="panel">
+    <span class="tag">Preview</span>
+    <h2>Type scale</h2>
+    <div class="scale-preview" id="typeScale"></div>
+  </section>
+
+  <section class="panel">
+    <span class="tag">Preview</span>
+    <h2>Spacing scale</h2>
+    <div class="spacing-preview" id="spacingScale"></div>
+  </section>
+
+  <section class="panel">
+    <span class="tag">Output</span>
+    <h2>Generated tokens</h2>
+    <pre id="cssOutput"></pre>
+    <div class="btn-row">
+      <button class="action" id="downloadCss">Download CSS</button>
+      <button class="action secondary" id="downloadJson">Download JSON</button>
+      <button class="action secondary" id="copyCss">Copy CSS</button>
+    </div>
+  </section>
+
+  <footer>
+    <span>singularityui.com / skeleton-king design-token generator</span>
+  </footer>
+</main>
+
+<script>
+// ---- color math (self-contained, no external libraries) ----
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const num = parseInt(hex, 16);
+  return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+}
+function rgbToHex(r, g, b) {
+  return '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+}
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+  if (max === min) { h = s = 0; }
+  else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return { h: h * 360, s: s * 100, l: l * 100 };
+}
+function hslToRgb(h, s, l) {
+  h /= 360; s /= 100; l /= 100;
+  let r, g, b;
+  if (s === 0) { r = g = b = l; }
+  else {
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+  }
+  return { r: r * 255, g: g * 255, b: b * 255 };
+}
+
+// 10-step scale: 50 (near-white) through 900 (near-black), pivoting on the input color's hue/saturation.
+const SCALE_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+function buildColorScale(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  const hsl = rgbToHsl(r, g, b);
+  return SCALE_STEPS.map(step => {
+    // Lightness curve: step 500 keeps the input's own lightness; steps below lighten, above darken.
+    const idx = SCALE_STEPS.indexOf(step);
+    const target = 95 - idx * (95 - 10) / (SCALE_STEPS.length - 1);
+    const lightness = idx <= 5
+      ? hsl.l + (95 - hsl.l) * (1 - idx / 5) * 0.55
+      : hsl.l - (hsl.l - 10) * ((idx - 5) / 4) * 0.85;
+    const clampedL = Math.max(4, Math.min(97, lightness));
+    const rgb = hslToRgb(hsl.h, hsl.s, clampedL);
+    return { step, hex: rgbToHex(rgb.r, rgb.g, rgb.b) };
+  });
+}
+
+// Adjective presets: each maps to a type-scale ratio and a spacing base unit + multiplier.
+const ADJECTIVE_PRESETS = {
+  minimal: { typeRatio: 1.2, spaceBase: 4, spaceMult: 1.5 },
+  bold: { typeRatio: 1.414, spaceBase: 8, spaceMult: 1.8 },
+  elegant: { typeRatio: 1.25, spaceBase: 6, spaceMult: 1.6 },
+  playful: { typeRatio: 1.333, spaceBase: 6, spaceMult: 1.9 },
+  dense: { typeRatio: 1.125, spaceBase: 4, spaceMult: 1.35 },
+  airy: { typeRatio: 1.333, spaceBase: 10, spaceMult: 2.0 },
+};
+function resolvePreset(selected) {
+  if (!selected.length) return { typeRatio: 1.25, spaceBase: 8, spaceMult: 1.6 }; // neutral default
+  const presets = selected.map(a => ADJECTIVE_PRESETS[a]);
+  const avg = (key) => presets.reduce((sum, p) => sum + p[key], 0) / presets.length;
+  return { typeRatio: avg('typeRatio'), spaceBase: avg('spaceBase'), spaceMult: avg('spaceMult') };
+}
+
+const TYPE_STEP_NAMES = ['xs', 'sm', 'base', 'lg', 'xl', '2xl', '3xl'];
+function buildTypeScale(ratio) {
+  const baseRem = 1;
+  return TYPE_STEP_NAMES.map((name, i) => {
+    const power = i - 2; // 'base' sits at index 2
+    return { name, rem: +(baseRem * Math.pow(ratio, power)).toFixed(3) };
+  });
+}
+
+const SPACE_STEP_NAMES = ['1', '2', '3', '4', '5', '6'];
+function buildSpacingScale(base, mult) {
+  let value = base;
+  return SPACE_STEP_NAMES.map((name) => {
+    const px = Math.round(value);
+    value *= mult;
+    return { name, px };
+  });
+}
+
+// ---- wiring ----
+const state = { color: '#00FF00', adjectives: [], projectName: 'my-project.com' };
+
+const colorInput = document.getElementById('brandColor');
+const colorHexLabel = document.getElementById('brandColorHex');
+const projectInput = document.getElementById('projectName');
+const adjButtons = Array.from(document.querySelectorAll('.adj-btn'));
+
+function render() {
+  const scale = buildColorScale(state.color);
+  const preset = resolvePreset(state.adjectives);
+  const typeScale = buildTypeScale(preset.typeRatio);
+  const spacingScale = buildSpacingScale(preset.spaceBase, preset.spaceMult);
+
+  // color swatches
+  const swatchRow = document.getElementById('colorSwatches');
+  swatchRow.innerHTML = scale.map(s =>
+    `<div class="swatch"><div class="chip" style="background:${s.hex}"></div>${s.step}<br>${s.hex}</div>`
+  ).join('');
+
+  // type scale
+  const typeEl = document.getElementById('typeScale');
+  typeEl.innerHTML = typeScale.map(t =>
+    `<div class="step" style="font-size:${t.rem}rem">Aa ${t.name} <small>${t.rem}rem</small></div>`
+  ).join('');
+
+  // spacing scale
+  const spaceEl = document.getElementById('spacingScale');
+  document.documentElement.style.setProperty('--accent-live', state.color);
+  spaceEl.innerHTML = spacingScale.map(s =>
+    `<div class="bar" style="height:${Math.min(s.px, 72)}px" title="space-${s.name}: ${s.px}px"></div>`
+  ).join('');
+
+  // CSS output, in the same token shape as skeletonking/design-tokens/*.css
+  const cssLines = [
+    `/* Design tokens for ${state.projectName} */`,
+    `/* Generated by singularityui.com design-token generator */`,
+    ``,
+    `:root {`,
+    `  --brand-color: ${state.color};`,
+    ...scale.map(s => `  --color-${s.step}: ${s.hex};`),
+    ``,
+    `  /* Type scale (ratio ${preset.typeRatio.toFixed(3)}) */`,
+    ...typeScale.map(t => `  --text-${t.name}: ${t.rem}rem;`),
+    ``,
+    `  /* Spacing scale (base ${Math.round(preset.spaceBase)}px, x${preset.spaceMult.toFixed(2)}) */`,
+    ...spacingScale.map(s => `  --space-${s.name}: ${s.px}px;`),
+    `}`,
+  ];
+  const css = cssLines.join('\n');
+  document.getElementById('cssOutput').textContent = css;
+
+  state._css = css;
+  state._json = JSON.stringify({
+    project: state.projectName,
+    brandColor: state.color,
+    adjectives: state.adjectives,
+    colorScale: Object.fromEntries(scale.map(s => [s.step, s.hex])),
+    typeScale: Object.fromEntries(typeScale.map(t => [t.name, `${t.rem}rem`])),
+    spacingScale: Object.fromEntries(spacingScale.map(s => [s.name, `${s.px}px`])),
+  }, null, 2);
+}
+
+colorInput.addEventListener('input', () => {
+  state.color = colorInput.value;
+  colorHexLabel.textContent = state.color;
+  render();
+});
+projectInput.addEventListener('input', () => {
+  state.projectName = projectInput.value || 'my-project.com';
+  render();
+});
+adjButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const adj = btn.dataset.adj;
+    const idx = state.adjectives.indexOf(adj);
+    if (idx >= 0) {
+      state.adjectives.splice(idx, 1);
+      btn.classList.remove('active');
+    } else {
+      if (state.adjectives.length >= 3) return;
+      state.adjectives.push(adj);
+      btn.classList.add('active');
+    }
+    render();
+  });
+});
+
+function downloadBlob(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('downloadCss').addEventListener('click', () => {
+  downloadBlob(state._css, `${state.projectName.replace(/[^a-z0-9.-]/gi, '_')}.tokens.css`, 'text/css');
+});
+document.getElementById('downloadJson').addEventListener('click', () => {
+  downloadBlob(state._json, `${state.projectName.replace(/[^a-z0-9.-]/gi, '_')}.tokens.json`, 'application/json');
+});
+document.getElementById('copyCss').addEventListener('click', () => {
+  navigator.clipboard.writeText(state._css).then(() => {
+    const btn = document.getElementById('copyCss');
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = original; }, 1200);
+  });
+});
+
+render();
+</script>
+</body>
+</html>
