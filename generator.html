@@ -204,17 +204,19 @@ function hslToRgb(h, s, l) {
 
 // 10-step scale: 50 (near-white) through 900 (near-black), pivoting on the input color's hue/saturation.
 const SCALE_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+const SCALE_LIGHT_TOP = 97, SCALE_LIGHT_BOTTOM = 4;
 function buildColorScale(hex) {
   const { r, g, b } = hexToRgb(hex);
   const hsl = rgbToHsl(r, g, b);
-  return SCALE_STEPS.map(step => {
-    // Lightness curve: step 500 keeps the input's own lightness; steps below lighten, above darken.
-    const idx = SCALE_STEPS.indexOf(step);
-    const target = 95 - idx * (95 - 10) / (SCALE_STEPS.length - 1);
+  // Pivot (step 500) is clamped away from the absolute extremes so black/white/near-neutral
+  // brand colors still leave room to interpolate a full 10 distinct steps in both directions -
+  // an unclamped pivot collapsed steps 500-900 (or 50-500) into duplicate hex values for those inputs.
+  const pivotL = Math.max(8, Math.min(92, hsl.l));
+  return SCALE_STEPS.map((step, idx) => {
     const lightness = idx <= 5
-      ? hsl.l + (95 - hsl.l) * (1 - idx / 5) * 0.55
-      : hsl.l - (hsl.l - 10) * ((idx - 5) / 4) * 0.85;
-    const clampedL = Math.max(4, Math.min(97, lightness));
+      ? SCALE_LIGHT_TOP + (pivotL - SCALE_LIGHT_TOP) * (idx / 5)
+      : pivotL + (SCALE_LIGHT_BOTTOM - pivotL) * ((idx - 5) / 4);
+    const clampedL = Math.max(SCALE_LIGHT_BOTTOM, Math.min(SCALE_LIGHT_TOP, lightness));
     const rgb = hslToRgb(hsl.h, hsl.s, clampedL);
     return { step, hex: rgbToHex(rgb.r, rgb.g, rgb.b) };
   });
