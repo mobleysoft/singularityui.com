@@ -2,6 +2,26 @@
 
 ---
 
+**CORRECTED 2026-09-22 (depth audit)**: this document describes an aspirational
+architecture as if it were built and verified today. It isn't. What's real,
+live, and checkable right now: [`generator.html`](generator.html) — input one
+brand color and up to three brand adjectives, get back a real CSS/JSON
+design-token set (10-step color scale, type scale, spacing scale), running
+entirely client-side. That's the whole of SingularityUI's live product.
+Everything below this line — NLP prompt parsing, automatic component
+selection, "500+ verified, tested" components, WCAG 2.1 AAA compliance,
+real-time/offline pattern support, and especially the "124+ ventures running
+on this infrastructure" claim — is long-term vision, not current capability.
+The "124+ ventures" figure in particular was already checked and found false
+elsewhere (`skeletonking/README.md`, corrected 2026-09-18: 13 real live
+venture pages checked for any trace of this system — zero matches; the
+`/skeletonking/design-tokens` codebase is a real, generated local asset with
+no confirmed live deployment) and should have been corrected here too at the
+same time. Read the rest of this document as a design sketch of where
+SingularityUI is aimed, not a status report of where it is.
+
+---
+
 ## What They Are
 
 ### SingularityUI
@@ -328,14 +348,23 @@ Just: **"Generate [type of website]" → Production-ready code in minutes**
 
 By controlling BOTH layers (SingularityUI + Skeleton King), you have:
 
-1. **Uniqueness**: No competitor has this stacked combination
-2. **Speed**: Minutes vs. weeks for other platforms
-3. **Quality**: WCAG 2.1 AAA accessibility built-in
-4. **Sovereignty**: Zero third-party dependencies
-5. **Scale**: 124+ ventures running on this infrastructure
-6. **Documentation**: Master taxonomy of 500+ components + 1000+ patterns
-7. **Extensibility**: Framework grows with each new venture
-8. **Economics**: Generate 500+ websites at near-zero marginal cost
+*(The list below is the long-term thesis, not a status report — see the
+correction at the top of this document. None of these 8 points are true
+today; the only real, live piece is the design-token generator.)*
+
+1. **Uniqueness** (vision): no competitor has this stacked combination
+2. **Speed** (vision): minutes vs. weeks for other platforms
+3. **Quality** (vision): WCAG 2.1 AAA accessibility — never built or tested
+4. **Sovereignty** (real, for the one live tool): the token generator runs
+   entirely client-side, zero third-party dependencies
+5. **Scale** (false as stated, corrected 2026-09-22): not "124+ ventures
+   running on this infrastructure" — zero confirmed live deployments of the
+   Skeleton King pipeline outside this one generator page
+6. **Documentation** (vision): a taxonomy document exists
+   (`skeleton-king-taxonomy.html`) cataloguing 500+ components and 1000+
+   patterns as a target inventory — none are built or verified
+7. **Extensibility** (vision): not yet applicable, nothing to extend yet
+8. **Economics** (vision): unbuilt, so no marginal-cost claim holds yet
 
 ---
 
